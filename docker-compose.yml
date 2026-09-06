@@ -2,6 +2,9 @@ version: '3.8'
 
 services:
 
+  # =====================================================
+  # KAFKA
+  # =====================================================
   kafka:
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka-local
@@ -34,6 +37,10 @@ services:
 
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
+
+  # =====================================================
+  # KAFKA UI
+  # =====================================================
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui-local
@@ -47,3 +54,51 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-local:29092
+
+
+  # =====================================================
+  # POSTGRESQL
+  # =====================================================
+  postgres:
+    image: postgres:16
+    container_name: postgres-local
+
+    ports:
+      - "5432:5432"
+
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+
+  # =====================================================
+  # MONGODB
+  # =====================================================
+  mongodb:
+    image: mongo:7
+    container_name: mongodb-local
+
+    ports:
+      - "27017:27017"
+
+    environment:
+      MONGO_INITDB_DATABASE: order_nosql
+
+    volumes:
+      - mongodb_data:/data/db
+
+    restart: unless-stopped
+
+
+# =====================================================
+# VOLUMES
+# =====================================================
+volumes:
+  postgres_data:
+  mongodb_data:
