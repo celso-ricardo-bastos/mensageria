@@ -1,0 +1,22 @@
+server:
+  port: 8081 # Porta onde sua API Spring vai rodar
+
+spring:
+  application:
+    name: order-service
+  kafka:
+    # Endereço do cluster Kafka que está rodando no Docker
+    bootstrap-servers: localhost:9092
+
+    producer:
+      # A chave (Key) do Kafka será uma String simples (o nosso UUID)
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      # O valor (Value) será o nosso objeto convertido automaticamente para JSON
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        # Configuração importante: Garante que o Spring adicione os cabeçalhos de tipo
+        # para ajudar na futura leitura/deserialização do JSON por outros microsserviços
+        spring.json.add.type.headers: true
+        spring.json.object.mapper: org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.jacksonObjectMapper
