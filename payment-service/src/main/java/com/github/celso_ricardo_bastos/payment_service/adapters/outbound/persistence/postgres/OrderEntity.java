@@ -1,4 +1,4 @@
-package com.github.celso_ricardo_bastos.payment_service.model;
+package com.github.celso_ricardo_bastos.payment_service.adapters.outbound.persistence.postgres;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

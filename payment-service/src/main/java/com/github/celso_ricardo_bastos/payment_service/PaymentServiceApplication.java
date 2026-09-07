@@ -2,11 +2,12 @@ package com.github.celso_ricardo_bastos.payment_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication
 @EnableKafka
+@EnableFeignClients
 public class PaymentServiceApplication {
 
 	public static void main(String[] args) {

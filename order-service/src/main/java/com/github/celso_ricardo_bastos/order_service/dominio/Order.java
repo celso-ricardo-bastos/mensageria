@@ -11,6 +11,7 @@ public class Order {
     private final BigDecimal totalAmount;
     private OrderStatus status;
     private final LocalDateTime createdAt;
+    private final String cep;
 
     /**
      * Construtor para a criação de um NOVO pedido.
@@ -19,7 +20,7 @@ public class Order {
      * @param customerId ID do cliente que está realizando o pedido
      * @param totalAmount Valor total do pedido
      */
-    public Order(String customerId, BigDecimal totalAmount, OrderStatus status) {
+    public Order(String customerId, BigDecimal totalAmount, OrderStatus status, String cep) {
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalArgumentException("O ID do cliente é obrigatório.");
         }
@@ -32,22 +33,24 @@ public class Order {
         this.totalAmount = totalAmount;
         this.status = status;
         this.createdAt = LocalDateTime.now();
+        this.cep = cep;
     }
 
     // Ponto de entrada de criação (Sem usar 'new' no seu Service)
-    public static Order create(String customerId, BigDecimal totalAmount, OrderStatus status) {
-        return new Order(customerId, totalAmount, status);
+    public static Order create(String customerId, BigDecimal totalAmount, OrderStatus status, String cep) {
+        return new Order(customerId, totalAmount, status, cep);
     }
 
     /**
      * Construtor secundário para reconstituir um pedido existente a partir do banco de dados ou DTO.
      */
-    public Order(String orderId, String customerId, BigDecimal totalAmount, OrderStatus status, LocalDateTime createdAt) {
+    public Order(String orderId, String customerId, BigDecimal totalAmount, OrderStatus status, LocalDateTime createdAt, String cep) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.totalAmount = totalAmount;
         this.status = status;
         this.createdAt = createdAt;
+        this.cep = cep;
     }
 
     // Regras de negócio do domínio (Comportamentos)
@@ -76,5 +79,9 @@ public class Order {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getCep() {
+        return cep;
     }
 }

@@ -1,6 +1,5 @@
-package com.github.celso_ricardo_bastos.payment_service.repository;
+package com.github.celso_ricardo_bastos.payment_service.adapters.outbound.persistence.postgres;
 
-import com.github.celso_ricardo_bastos.payment_service.model.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, String> {

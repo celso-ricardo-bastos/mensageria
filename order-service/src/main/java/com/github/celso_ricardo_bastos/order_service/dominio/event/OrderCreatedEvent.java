@@ -10,5 +10,6 @@ public record OrderCreatedEvent(
         String customerId,
         BigDecimal totalAmount,
         OrderStatus status,
-        String createdAt
+        String createdAt,
+        String cep
 ) {}

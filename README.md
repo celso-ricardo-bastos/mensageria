@@ -16,6 +16,7 @@ http://localhost:8282/
 curl --location 'http://localhost:8081/api/orders' \
 --header 'Content-Type: application/json' \
 --data '{
-  "customerId": "user_celso_1001",
-  "totalAmount": 152458.000
+  "customerId": "user_amanda_1001",
+  "totalAmount": 77.00,
+  "cep": "04849270"
 }'
