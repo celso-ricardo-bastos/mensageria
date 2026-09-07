@@ -1,4 +1,6 @@
-# Kafka
+# Payment Microservice Java21
+Java 21 + Spring Boot + Hexagonal Architecture + Kafka + OpenFeign + PostgreSQL + MongoDB + Async Processing
+
 ![alt text](image.png)
 
 ## Up the app
