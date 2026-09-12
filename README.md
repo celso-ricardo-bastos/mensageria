@@ -1,20 +1,28 @@
-# Payment Microservice Java21
-Java 21 + Spring Boot + Hexagonal Architecture + Kafka + OpenFeign + PostgreSQL + MongoDB + Async Processing
+# 💳 Payment Microservice Java 21
 
-![alt text](image.png)
+**Java 21 + Spring WebFlux + Reactive Hexagonal Architecture + Kafka + PostgreSQL (R2DBC) / MongoDB Reactive + Non-blocking Async Processing**
 
-## Up the app
+![Architecture Diagram](image.png)
+
+## 🚀 Quick Start
+
+### 1. Up the app infrastructure
+```bash
 docker compose up -d
+```
 
-## Access the queen in the localhost pot 8282
-http://localhost:8282/
+### 2. Access Kafka UI / Management Console
+[http://localhost:8282/](http://localhost:8282/)
 
-## App fluxo of the Order and Payment
-![alt text](image-1.png)
-![alt text](image-2.png)
+---
 
+## 🔄 App Flow (Order & Payment)
 
-## CURL to register topic
+![Order Flow](image-1.png)
+![Payment Flow](image-2.png)
+
+### 🧪 Send CURL to register order topic
+```bash
 curl --location 'http://localhost:8081/api/orders' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -22,104 +30,107 @@ curl --location 'http://localhost:8081/api/orders' \
   "totalAmount": 77.00,
   "cep": "04849270"
 }'
+```
 
+---
 
-# 💳 Payment Service
+## 📌 Project Overview
 
-A production-inspired payment microservice built with **Java 21** and **Spring Boot**, demonstrating modern backend development practices, **Hexagonal Architecture**, asynchronous processing and event-driven communication.
+A production-inspired payment microservice built with **Java 21** and **Spring WebFlux**, demonstrating modern reactive backend development practices, **Hexagonal Architecture**, fully non-blocking I/O operations, and event-driven communication.
 
-## 🚀 Highlights
+## 🚀 Key Highlights
 
-* Java 21
-* Spring Boot
-* Hexagonal Architecture
-* Apache Kafka
-* OpenFeign
-* PostgreSQL
-* MongoDB
-* Docker
-* REST API
-* Asynchronous external API calls
-* Virtual Threads
-* CompletableFuture
-* Domain-driven design principles
-* Event-driven architecture
+* **Java 21**
+* **Spring Boot 3 & Spring WebFlux** (Reactive Stack)
+* **Hexagonal Architecture** (Ports & Adapters)
+* **Apache Kafka** (Reactive Consumer / Event-Driven)
+* **Spring WebClient** (Non-blocking HTTP Client)
+* **Reactive Data Access** (R2DBC for PostgreSQL / Reactive Mongo Repositories)
+* **Reactive Async Processing** (`Mono.zip` / `Flux` composition)
+* **Virtual Threads & Project Reactor Integration**
+* **Domain-Driven Design (DDD) principles**
+
+---
 
 ## 🏗️ Architecture
 
-The project follows **Hexagonal Architecture**, keeping business rules independent from frameworks, databases and external services.
+The project follows **Hexagonal Architecture**, isolating domain models and business logic from reactive frameworks, databases, and external I/O adapters.
 
 ```text
-                         ┌─────────────────────┐
-                         │     Kafka Consumer   │
-                         │    Inbound Adapter   │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │      Use Case       │
-                         │                     │
-                         │   Create Payment    │
-                         └──────────┬──────────┘
-                                    │
-                    ┌───────────────┼───────────────┐
-                    │               │               │
-                    ▼               ▼               ▼
-              ViaCEP API       Economy API     Persistence
-              OpenFeign       OpenFeign       Port
-                    │               │               │
-                    ▼               ▼          ┌────┴────┐
-                 Address         Currency      │         │
-                                             PostgreSQL MongoDB
+                        ┌─────────────────────┐
+                        │   Kafka Consumer    │
+                        │  (Reactive Inbound) │
+                        └──────────┬──────────┘
+                                   │
+                                   ▼
+                        ┌─────────────────────┐
+                        │      Use Case       │
+                        │                     │
+                        │   Create Payment    │
+                        └──────────┬──────────┘
+                                   │
+         ┌─────────────────────────┼─────────────────────────┐
+         ▼                         ▼                         ▼
+    ViaCEP API                Economy API               Persistence
+   (WebClient)               (WebClient)                   Port
+         │                         │                         │
+         ▼                         ▼                   ┌─────┴─────┐
+      Address                   Currency               │           │
+                                                   PostgreSQL    MongoDB
+                                                    (R2DBC)     (Reactive)
 ```
 
-## ⚡ Asynchronous Processing
+---
 
-The payment process performs independent external API calls concurrently.
+## ⚡ Non-Blocking Reactive Processing
 
-The service queries:
+The payment flow triggers multiple independent external calls concurrently in a non-blocking execution model:
 
-* **ViaCEP** — address information
-* **AwesomeAPI** — USD/BRL exchange rate
+* **ViaCEP** — Fetch address details via non-blocking `WebClient`
+* **AwesomeAPI** — Fetch USD/BRL exchange rate via non-blocking `WebClient`
 
-These calls are executed concurrently using **Java 21 Virtual Threads** and `CompletableFuture`, reducing the total waiting time compared to sequential execution.
+Using **Spring WebFlux** (`Mono.zip`), external HTTP calls are dispatched reactively without thread blocking, ensuring high throughput, lower latency, and minimal resource utilization.
+
+---
 
 ## 📨 Event-Driven Communication
 
-Orders are received through **Apache Kafka**.
+Incoming orders are ingested reactively via **Apache Kafka**.
 
 ```text
 Order Service
       │
-      │ Kafka
+      │ Kafka Event
       ▼
 orders-topic
       │
       ▼
-Payment Service
+Payment Service (WebFlux Pipeline)
       │
-      ├── ViaCEP
+      ├── ViaCEP (WebClient - Mono)
       │
-      ├── Economy API
+      ├── Economy API (WebClient - Mono)
       │
       ▼
-   Payment
+Payment Processing
       │
-      ├── PostgreSQL
-      └── MongoDB
+      ├── PostgreSQL (R2DBC Reactive)
+      └── MongoDB (Reactive Mongo Repository)
 ```
+
+---
 
 ## 🔌 External Integrations
 
 ### ViaCEP
-
-Used to retrieve address information based on the customer's ZIP code.
+Non-blocking lookup for customer address details based on ZIP code using `WebClient`.
 
 ### AwesomeAPI
+Non-blocking lookup for real-time USD/BRL currency conversion rates using `WebClient`.
 
-Used to retrieve the current USD/BRL exchange rate.
+*Both integrations are fully decoupled behind **outbound ports**, preserving core domain independence.*
 
-Both integrations are isolated behind **outbound ports**, keeping the application core independent from HTTP clients and external APIs.
+---
 
 ## 🧱 Project Structure
 
@@ -141,83 +152,79 @@ src/main/java/com/github/celso_ricardo_bastos/payment_service/
     │   └── kafka/
     │
     └── outbound/
-        ├── viacep/
-        ├── economia/
-        ├── postgres/
-        ├── mongo/
+        ├── viacep/        # WebClient Outbound Adapter
+        ├── economia/      # WebClient Outbound Adapter
+        ├── postgres/      # R2DBC Reactive Adapter
+        ├── mongo/         # Reactive Mongo Adapter
         └── kafka/
 ```
 
-## 🛠️ Technologies
+---
 
-| Technology             | Purpose                    |
-| ---------------------- | -------------------------- |
-| Java 21                | Application development    |
-| Spring Boot            | Application framework      |
-| Spring Cloud OpenFeign | External API communication |
-| Apache Kafka           | Asynchronous messaging     |
-| PostgreSQL             | Relational persistence     |
-| MongoDB                | Document persistence       |
-| Docker                 | Infrastructure             |
-| Maven                  | Dependency management      |
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+| :--- | :--- |
+| **Java 21** | Modern Java Features & Virtual Threads |
+| **Spring WebFlux** | Reactive & Non-blocking Web Framework |
+| **Spring WebClient** | Asynchronous HTTP Requests |
+| **Apache Kafka** | Asynchronous Reactive Event Streaming |
+| **PostgreSQL + R2DBC** | Reactive Relational Persistence |
+| **MongoDB Reactive** | Reactive Document Persistence |
+| **Docker & Compose** | Infrastructure & Containerization |
+| **Maven** | Dependency Management |
+
+---
 
 ## 🎯 Main Concepts Demonstrated
 
-This project was designed to demonstrate practical implementation of:
+* Reactive Programming with **Project Reactor & WebFlux**
+* **Hexagonal Architecture** with Reactive Pipelines
+* **Non-blocking I/O Operations** across WebClient and Database Adapters
+* Dependency Inversion and Clean Domain Isolation
+* Event-Driven Architecture with **Apache Kafka**
+* Reactive Concurrency Management (`Mono.zip`, `Flux`)
+* Polyglot Persistence via Reactive Drivers (R2DBC & Reactive Mongo)
 
-* Hexagonal Architecture
-* Dependency Inversion
-* Ports and Adapters
-* Domain isolation
-* Event-driven architecture
-* Asynchronous processing
-* Concurrent external API calls
-* Virtual Threads
-* Microservice communication
-* Polyglot persistence
-* External API integration
+---
 
 ## ▶️ Running the Project
 
-### Requirements
+### Prerequisites
+* **Java 21**
+* **Maven**
+* **Docker & Docker Compose**
 
-* Java 21
-* Maven
-* Docker
-* Docker Compose
+### Steps
 
-Clone the repository:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/celsobastos/payment-service.git
+   ```
 
-```bash
-git clone https://github.com/celsobastos/payment-service.git
-```
+2. **Navigate to the directory:**
+   ```bash
+   cd payment-service
+   ```
 
-Enter the project:
+3. **Start infrastructure containers:**
+   ```bash
+   docker compose up -d
+   ```
 
-```bash
-cd payment-service
-```
+4. **Run the reactive application:**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   *On Windows:*
+   ```bash
+   mvnw.cmd spring-boot:run
+   ```
 
-Start the infrastructure:
-
-```bash
-docker compose up -d
-```
-
-Run the application:
-
-```bash
-./mvnw spring-boot:run
-```
-
-On Windows:
-
-```bash
-mvnw.cmd spring-boot:run
-```
+---
 
 ## 👨‍💻 About
 
-This project is part of my backend engineering portfolio, focusing on **Java, Spring Boot, microservices, distributed systems and software architecture**.
+This project is part of my backend engineering portfolio, focusing on **Java 21, Reactive Programming (Spring WebFlux), Distributed Systems, Event-Driven Architectures, and Software Design Patterns**. 
 
-The goal is not only to build a functional payment service, but to demonstrate how modern backend systems can be structured for **maintainability, scalability and separation of concerns**.
+The goal is to demonstrate how to build high-throughput, non-blocking backend services with robust architectural boundaries.
