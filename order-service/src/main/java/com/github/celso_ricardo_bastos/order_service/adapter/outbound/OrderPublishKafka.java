@@ -1,14 +1,12 @@
 package com.github.celso_ricardo_bastos.order_service.adapter.outbound;
 
 import com.github.celso_ricardo_bastos.order_service.dominio.event.OrderCreatedEvent;
-import com.github.celso_ricardo_bastos.order_service.dominio.Order;
 import com.github.celso_ricardo_bastos.order_service.application.ports.outbound.OrderOutboundPort;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderPublishKafka implements OrderOutboundPort {
@@ -27,23 +25,24 @@ public class OrderPublishKafka implements OrderOutboundPort {
 
         // Usamos o orderId como chave de partição para manter a ordem cronológica do pedido
         kafkaTemplate
-                .send("orders-topic", orderEvent.orderId(), orderEvent)
-                .whenComplete((result, exception) -> {
+            .send("orders-topic", orderEvent.orderId(), orderEvent)
+            .whenComplete((result, exception) -> {
 
-                    if (exception != null) {
-                        log.error(
-                                "Erro ao publicar pedido no Kafka. orderId={}",
-                                orderEvent.orderId()
-                        );
-                        return;
-                    }
-
-                    log.info(
-                            "Pedido publicado no Kafka. orderId={}, partition={}, offset={}",
-                            orderEvent.orderId(),
-                            result.getRecordMetadata().partition(),
-                            result.getRecordMetadata().offset()
+                if (exception != null) {
+                    log.error(
+                            "Erro ao publicar pedido no Kafka. orderId={}",
+                            orderEvent.orderId()
                     );
-                });
+                    return;
+                }
+
+                log.info(
+                        "Pedido publicado no Kafka. orderId={}, partition={}, offset={}",
+                        orderEvent.orderId(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset()
+                );
+            });
     }
 }
+    

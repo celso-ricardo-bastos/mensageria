@@ -39,7 +39,8 @@ public class Payment {
             PaymentStatus status,
             LocalDateTime createdAt,
             Address address,
-            Economia economia) {
+            Economia economia
+    ) {
 
         if (totalAmount == null ||
                 totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
